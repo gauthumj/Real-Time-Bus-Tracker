@@ -1,6 +1,6 @@
-# real_time_bus_tracker
+# Real Time Bus Tracker
 
-A new Flutter application.
+A project aimed at creating an app to track the bus for day scholars of VIT.
 
 ## Getting Started
 
