@@ -22,6 +22,7 @@ environment:
 
 dependencies:
   google_maps_flutter: ^2.0.1
+  geolocator: ^4.0.3
   flutter:
     sdk: flutter
 
