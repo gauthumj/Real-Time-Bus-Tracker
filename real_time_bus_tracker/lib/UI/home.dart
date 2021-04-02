@@ -11,22 +11,56 @@ class Home extends StatelessWidget {
       home: Scaffold(
         body: Map(),
         appBar: AppBar(
-          title: Text('Test'),
+          title: Text('Bus Tracker'),
         ),
         drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                child: Text("Drawer"),
-                decoration: BoxDecoration(color: Colors.deepPurple),
+          child: Column(
+            children:  <Widget>[
+              Container(
+                height: 130.0,
+                child: DrawerHeader(
+                  margin: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                         "Profile",
+                         style: TextStyle(
+                           fontSize: 18,
+                           fontWeight: FontWeight.bold,
+                         ),
+                      ),
+                      Icon(Icons.account_circle_outlined),
+                    ]
+                  ),
+                  decoration: BoxDecoration(color: Colors.deepPurple),
+                ),
               ),
               ListTile(
-                title: Text('ITEM 1'), //add on-tap functions
+                title: Text(
+                    'Settings',
+                    style: TextStyle(fontSize: 16)
+                ), //add on-tap functions
+                leading: Icon(Icons.settings),
               ),
               ListTile(
-                title: Text('ITEM 2'), //add on-tap functions
-              )
+                title: Text(
+                    'About',
+                    style: TextStyle(fontSize: 16)
+                ),
+                leading: Icon(Icons.people), //add on-tap functions
+              ),
+              Expanded(child: Container()),
+              Card(
+              child: ListTile(
+                title: Text(
+                  'Log Out',
+                  style: TextStyle(fontSize:16)
+                ), //add on-tap functions
+                leading: Icon(Icons.logout),
+                ),
+              ),
             ],
           ),
         ),
@@ -34,6 +68,8 @@ class Home extends StatelessWidget {
     );
   }
 }
+
+
 
 class Map extends StatefulWidget {
   @override
