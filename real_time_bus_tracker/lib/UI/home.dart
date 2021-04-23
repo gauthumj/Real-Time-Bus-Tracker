@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
+import './login.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -57,7 +58,11 @@ class Home extends StatelessWidget {
                 title: Text(
                   'Log Out',
                   style: TextStyle(fontSize:16)
-                ), //add on-tap functions
+                ),
+                onTap: () => {
+                  handleSignOut(),
+                  Navigator.pop(context)
+              },//add on-tap functions
                 leading: Icon(Icons.logout),
                 ),
               ),
