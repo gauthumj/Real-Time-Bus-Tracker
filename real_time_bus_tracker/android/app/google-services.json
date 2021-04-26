@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "948472735354-g82og2mmno5e82i01k10jgjeharbuhar.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.real_time_bus_tracker",
+            "certificate_hash": "88ff5426994fa76b7565ce7341987e76552b42f8"
+          }
+        },
+        {
           "client_id": "948472735354-vtdka9fapcna5tchf4g4kjpqtt687vip.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import './UI/login.dart';
 import './UI/home.dart';
 
 void main() {
@@ -11,9 +12,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+
+      ),
       debugShowCheckedModeBanner: false,
       title: 'Base',
-      home: Home(),
+      // home: Home(),
+      initialRoute: './',
+      routes:{
+        '/':(context) => Login(),
+        '/home':(context) =>Home()
+      }
     );
   }
 }
