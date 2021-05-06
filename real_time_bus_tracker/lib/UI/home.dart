@@ -2,10 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import './login.dart';
 
+FirebaseFirestore db = FirebaseFirestore.instance;
+
 class Home extends StatelessWidget {
+  final GeoPoint geoPoint = GeoPoint(0,0);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,7 +46,14 @@ class Home extends StatelessWidget {
                 title: Text(
                     'Settings',
                     style: TextStyle(fontSize: 16)
-                ), //add on-tap functions
+
+                ),
+                onTap: () =>{
+                  // db.collection('UserLocation').doc('U6PG3P3oChRJHr03xoVLKJjRLF83').get().then((value) => {
+                  //   geoPoint = value.data().values.first,
+                  //   print(geoPoint.latitude)
+                  // })
+                },
                 leading: Icon(Icons.settings),
               ),
               ListTile(
@@ -75,7 +86,6 @@ class Home extends StatelessWidget {
 }
 
 
-
 class Map extends StatefulWidget {
   @override
   _MapState createState() => _MapState();
@@ -88,12 +98,48 @@ class _MapState extends State<Map> {
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
   static LatLng _lastMapPosition = _initialPosition;
+  GeoPoint geoPoint;
+  int _markerIdCounter=0;
+
 
   @override
   void initState() {
     super.initState();
     _getUserLocation();
+    _getDriverLocation();
   }
+
+  void _setMarkers(LatLng point) {
+      final String markerIdVal = 'marker_id:$_markerIdCounter';
+      _markerIdCounter++;
+      setState(() {
+        _markers.add(
+          Marker(
+            markerId: MarkerId(markerIdVal),
+            position: point
+          ),
+        );
+      });
+  }
+
+  void _getDriverLocation() async{
+
+    await db.collection('UserLocation').doc('U6PG3P3oChRJHr03xoVLKJjRLF83').get().then((value) => {
+                      geoPoint = value.data().values.first,
+                      print(geoPoint.latitude)
+                    });
+    // await db.collection('UserLocation').get().then((value) => {
+    //   print(value.docs.elementAt(0).data().values)               // access doc index/bus no like so [i+1]
+    // }
+    // );
+    LatLng pos = LatLng(geoPoint.latitude, geoPoint.longitude);
+    print('position: $pos');
+    _markers.add(
+      Marker(markerId: MarkerId('1'),position: pos)
+    );
+    _setMarkers(pos);
+  }
+
 
   void _getUserLocation() async {
     Position position = await Geolocator()
@@ -140,6 +186,7 @@ class _MapState extends State<Map> {
     });
   }
 
+
   Widget mapButton(Function function, Icon icon, Color color) {
     return RawMaterialButton(
       onPressed: function,
@@ -167,8 +214,7 @@ class _MapState extends State<Map> {
           : Container(
               child: Stack(children: <Widget>[
                 GoogleMap(
-                  // markers: _markers,
-
+                  markers:_markers,
                   mapType: _currentMapType,
                   initialCameraPosition: CameraPosition(
                     target: _initialPosition,
@@ -179,7 +225,7 @@ class _MapState extends State<Map> {
                   onCameraMove: _onCameraMove,
                   myLocationEnabled: true,
                   compassEnabled: true,
-                  myLocationButtonEnabled: false,
+                  myLocationButtonEnabled: true,
                 ),
               ]),
             ),
