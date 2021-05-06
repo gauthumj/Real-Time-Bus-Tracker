@@ -30,7 +30,8 @@ class Login extends StatelessWidget{
           child: Text('Login with google'),
           onPressed: ()async{
             _handleSignIn();
-            Navigator.pushNamed(context, '/home');
+            if(await _googleSignIn.isSignedIn() == true)
+              Navigator.pushNamed(context, '/home');
             },
         )
      ),
