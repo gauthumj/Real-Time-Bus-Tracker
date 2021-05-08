@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 import 'dart:async';
 import './login.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
+final geo = Geoflutterfire();
 
 class Home extends StatelessWidget {
   final GeoPoint geoPoint = GeoPoint(0,0);
@@ -109,8 +111,9 @@ class _MapState extends State<Map> {
     _getDriverLocation();
   }
 
-  void _setMarkers(LatLng point) {
+  void _setMarkers(LatLng point) async{
       final String markerIdVal = 'marker_id:$_markerIdCounter';
+      _markers.clear();
       _markerIdCounter++;
       setState(() {
         _markers.add(
@@ -128,16 +131,21 @@ class _MapState extends State<Map> {
                       geoPoint = value.data().values.first,
                       print(geoPoint.latitude)
                     });
-    // await db.collection('UserLocation').get().then((value) => {
-    //   print(value.docs.elementAt(0).data().values)               // access doc index/bus no like so [i+1]
-    // }
-    // );
+
+    Stream<List<DocumentSnapshot>> stream = geo.collection(collectionRef:db.collection('UserLocation')).data('1');
+    stream.listen((List<DocumentSnapshot> documentList) {
+      // _markers.clear();
+      geoPoint= documentList.elementAt(0).data().values.first; //elementAt(busNo - 1)
+      LatLng pos = LatLng(geoPoint.latitude, geoPoint.longitude);
+      print('position: $pos');
+      _setMarkers(pos);
+    });
     LatLng pos = LatLng(geoPoint.latitude, geoPoint.longitude);
     print('position: $pos');
     _markers.add(
       Marker(markerId: MarkerId('1'),position: pos)
     );
-    _setMarkers(pos);
+    // _setMarkers(pos);
   }
 
 
