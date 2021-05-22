@@ -16,7 +16,35 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Map(),
+        body: Stack(
+          children: <Widget>[
+            Positioned(
+            top: 0,
+            bottom: 150,
+            left: 0,
+            right: 0,
+            child: Container(
+              child: Map(),
+              ),
+            ),
+            DraggableScrollableSheet(
+              initialChildSize: 0.25,
+              minChildSize: 0.1,
+              maxChildSize: 0.75,
+              builder: (BuildContext context, ScrollController scrollController){
+                return Container(
+                  color: Colors.white,
+                  child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: 10,
+                      itemBuilder: (BuildContext context, int index){
+                        return ListTile(title : Text('Item $index'),);
+                      }),
+                );
+              },
+            )
+          ],
+        ),
         appBar: AppBar(
           title: Text('Bus Tracker'),
         ),
