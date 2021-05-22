@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
-import './login.dart';
+
+FirebaseFirestore db = FirebaseFirestore.instance;
+FirebaseAuth auth = FirebaseAuth.instance;
 
 class DriverHome extends StatelessWidget{
 
@@ -30,12 +33,21 @@ class _MapState extends State<Map> {
   static LatLng _initialPosition;
   final Set<Marker> _markers = {};
   static LatLng _lastMapPosition = _initialPosition;
+  GeoPoint currentLocation;
 
   @override
   void initState() {
     super.initState();
     _getUserLocation();
   }
+  void _updateUserLocation() async {
+    Geolocator().getPositionStream().listen((Position position) {
+      currentLocation = GeoPoint(position.latitude, position.longitude);
+      db.collection('UserLocation').doc(FirebaseAuth.instance.currentUser.uid).update({
+        "Location" : currentLocation
+      });
+    });
+}
 
   void _getUserLocation() async {
     Position position = await Geolocator()

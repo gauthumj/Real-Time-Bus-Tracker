@@ -50,12 +50,7 @@ class Home extends StatelessWidget {
                     style: TextStyle(fontSize: 16)
 
                 ),
-                onTap: () =>{
-                  // db.collection('UserLocation').doc('U6PG3P3oChRJHr03xoVLKJjRLF83').get().then((value) => {
-                  //   geoPoint = value.data().values.first,
-                  //   print(geoPoint.latitude)
-                  // })
-                },
+                onTap: () =>{},
                 leading: Icon(Icons.settings),
               ),
               ListTile(
