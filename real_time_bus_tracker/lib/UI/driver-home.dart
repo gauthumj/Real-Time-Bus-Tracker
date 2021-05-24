@@ -16,6 +16,17 @@ class DriverHome extends StatelessWidget{
     return(MaterialApp(
       home: Scaffold(
         body: Map(),
+        appBar: AppBar(
+          title: Text('Home'),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => {
+              FirebaseAuth.instance.signOut(),
+              Navigator.pop(context)
+            },
+          ),
+        ),
       ),
     ));
   }
@@ -39,14 +50,19 @@ class _MapState extends State<Map> {
   void initState() {
     super.initState();
     _getUserLocation();
+    _updateUserLocation();
   }
   void _updateUserLocation() async {
-    Geolocator().getPositionStream().listen((Position position) {
+   /* StreamSubscription stream =*/ Geolocator().getPositionStream().listen((Position position) {
       currentLocation = GeoPoint(position.latitude, position.longitude);
-      db.collection('UserLocation').doc(FirebaseAuth.instance.currentUser.uid).update({
-        "Location" : currentLocation
+      print('location: $currentLocation');
+      db.collection('UserLocation')
+          .doc(FirebaseAuth.instance.currentUser.uid)
+          .update({
+        "Location": currentLocation
       });
     });
+    // stream.cancel();
 }
 
   void _getUserLocation() async {
