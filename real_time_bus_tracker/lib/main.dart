@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import './UI/login.dart';
 import './UI/home.dart';
+import './UI/driver-home.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,8 @@ class MyApp extends StatelessWidget {
       initialRoute: './',
       routes:{
         '/':(context) => Login(),
-        '/home':(context) =>Home()
+        '/home':(context) =>Home(),
+        '/driver-home':(context) => DriverHome()
       }
     );
   }

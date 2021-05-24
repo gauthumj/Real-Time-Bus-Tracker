@@ -9,6 +9,7 @@ import './login.dart';
 
 FirebaseFirestore db = FirebaseFirestore.instance;
 final geo = Geoflutterfire();
+int dropdownValue=1;
 
 class Home extends StatelessWidget {
   final GeoPoint geoPoint = GeoPoint(0,0);
@@ -20,7 +21,7 @@ class Home extends StatelessWidget {
           children: <Widget>[
             Positioned(
             top: 0,
-            bottom: 150,
+            bottom: 50,
             left: 0,
             right: 0,
             child: Container(
@@ -28,18 +29,15 @@ class Home extends StatelessWidget {
               ),
             ),
             DraggableScrollableSheet(
-              initialChildSize: 0.25,
+              initialChildSize: 0.1,
               minChildSize: 0.1,
               maxChildSize: 0.75,
               builder: (BuildContext context, ScrollController scrollController){
                 return Container(
                   color: Colors.white,
-                  child: ListView.builder(
-                      controller: scrollController,
-                      itemCount: 10,
-                      itemBuilder: (BuildContext context, int index){
-                        return ListTile(title : Text('Item $index'),);
-                      }),
+                  child: Center(
+                    child: DropDown(),
+                  ),
                 );
               },
             )
@@ -78,12 +76,7 @@ class Home extends StatelessWidget {
                     style: TextStyle(fontSize: 16)
 
                 ),
-                onTap: () =>{
-                  // db.collection('UserLocation').doc('U6PG3P3oChRJHr03xoVLKJjRLF83').get().then((value) => {
-                  //   geoPoint = value.data().values.first,
-                  //   print(geoPoint.latitude)
-                  // })
-                },
+                onTap: () =>{},
                 leading: Icon(Icons.settings),
               ),
               ListTile(
@@ -111,6 +104,45 @@ class Home extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class DropDown extends StatefulWidget {
+  // const MyStatefulWidget({Key? key}) : super(key: key);
+
+  @override
+  State<DropDown> createState() => _DropDownState();
+}
+
+/// This is the private State class that goes with MyStatefulWidget.
+class _DropDownState extends State<DropDown> {
+  int dropdownValue = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<int>(
+      value: dropdownValue,
+      icon: const Icon(Icons.arrow_downward),
+      iconSize: 24,
+      elevation: 16,
+      style: const TextStyle(color: Colors.deepPurple),
+      underline: Container(
+        height: 2,
+        color: Colors.deepPurpleAccent,
+      ),
+      onChanged: (int newValue) {
+        setState(() {
+          dropdownValue = newValue;
+        });
+      },
+      items: <int>[1, 2, 3, 4]
+          .map<DropdownMenuItem<int>>((int value) {
+        return DropdownMenuItem<int>(
+          value: value,
+          child: Text(value.toString()),
+        );
+      }).toList(),
     );
   }
 }
@@ -163,10 +195,12 @@ class _MapState extends State<Map> {
     Stream<List<DocumentSnapshot>> stream = geo.collection(collectionRef:db.collection('UserLocation')).data('1');
     stream.listen((List<DocumentSnapshot> documentList) {
       // _markers.clear();
+
       geoPoint= documentList.elementAt(0).data().values.first; //elementAt(busNo - 1)
       LatLng pos = LatLng(geoPoint.latitude, geoPoint.longitude);
       print('position: $pos');
       _setMarkers(pos);
+
     });
     LatLng pos = LatLng(geoPoint.latitude, geoPoint.longitude);
     print('position: $pos');

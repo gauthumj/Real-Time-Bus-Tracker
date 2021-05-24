@@ -1,7 +1,22 @@
+import 'dart:async';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import 'driver-home.dart';
+import 'home.dart';
+
+FirebaseAuth auth = FirebaseAuth.instance;
+
+StreamSubscription<User> user = FirebaseAuth.instance.authStateChanges()
+    .listen((User user) {
+if (user == null) {
+print('User is currently signed out!');
+} else {
+print('User is signed in!');
+}
+});
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: [
@@ -77,7 +92,8 @@ class Tabbar extends StatelessWidget {
                             child: GoogleSignInButton(
                               onPressed: ()async{
                                 _handleSignIn();
-                                Navigator.pushNamed(context, '/home');
+                                if(await _googleSignIn.isSignedIn() == true)
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => Home() ));
                               },
                               darkMode: true,
                             ),
@@ -98,11 +114,18 @@ class Tabbar extends StatelessWidget {
   }
 }
 
+class FormModel {
+  String email;
+  String password;
+  FormModel({this.email, this.password});
+}
+
 class MyCustomForm extends StatefulWidget {
   @override
   MyCustomFormState createState() {
     return MyCustomFormState();
   }
+  
 }
 
 class MyCustomFormState extends State<MyCustomForm> {
@@ -112,7 +135,7 @@ class MyCustomFormState extends State<MyCustomForm> {
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
-
+  final model = FormModel();
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -124,6 +147,9 @@ class MyCustomFormState extends State<MyCustomForm> {
           Padding(
             padding: const EdgeInsets.all(9.0),
             child: TextFormField(
+              onSaved: (value){
+                model.email = value;
+              },
               decoration: InputDecoration(
                 labelText: "Username",
                 fillColor: Colors.white,
@@ -145,6 +171,10 @@ class MyCustomFormState extends State<MyCustomForm> {
           Padding(
             padding: const EdgeInsets.all(9.0),
             child: TextFormField(
+              obscureText: true,
+              onSaved: (value) {
+                model.password = value;
+              },
               decoration: InputDecoration(
                 labelText: "Password",
                 fillColor: Colors.white,
@@ -166,13 +196,32 @@ class MyCustomFormState extends State<MyCustomForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10.0),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async{
                 // Validate returns true if the form is valid, or false otherwise.
                 if (_formKey.currentState.validate()) {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
+                  _formKey.currentState.save();
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text('Processing Data')));
+                  print('email: ${model.email} password: ${model.password}');
+                  try {
+                    UserCredential userCredential = await auth.signInWithEmailAndPassword(
+                        email: model.email,
+                        password: model.password,
+                    );
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'user-not-found') {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('User not found :(')));
+                    } else if (e.code == 'wrong-password') {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('Wrong password fool!')));
+                    }
+                  }
+                }
+                if(user!=null){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => DriverHome() ));
                 }
               },
               child: Text('Submit'),
